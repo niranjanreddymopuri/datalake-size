@@ -3,31 +3,37 @@ name: Get data lake folder size
 on:
     workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
     get-size:
         runs-on: ubuntu-latest
+
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
 
             - name: Login to Azure
-              shell: pwsh
-              run: |
-                $ClientSecret = "{{ secrets.ClientSecret }}"
-                $SecurePassword = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
-                $TenantId = "{{ secrets.TenantId }}"
-                $ApplicationId = "{{ secrets.ApplicationId }}"
-                $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApplicationId, $SecurePassword
-                Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
+              uses: azure/login@v2
+              with:
+                client-id: ${{ secrets.APPLICATIONID }}
+                tenant-id: ${{ secrets.TENANTID }}
+                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                enable-AzPSSession: true
 
             - name: Get size of data lake folder
-              shell: pwsh
-              run: ./scripts/dlsize.ps1
+              uses: azure/powershell@v2
+              with:
+                inlineScript: './scripts/dls-folder-size.ps1'
+                azPSVersion: 'Latest'
+
             - name: upload generated file
               uses: actions/upload-artifact@v4
               with:
-                    name: datalake-size
-                    path: ./output/
+                name: datalake-size
+                path: ./output/
             - name: list the generated file
               shell: pwsh
               run: |
