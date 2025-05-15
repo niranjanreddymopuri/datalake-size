@@ -20,7 +20,7 @@ jobs:
               with:
                 client-id: ${{ secrets.APPLICATIONID }}
                 tenant-id: ${{ secrets.TENANTID }}
-                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                subscription-id: ${{ secrets.SUBSCRIPTION_ID }}
                 enable-AzPSSession: true
 
             - name: Get size of data lake folder
