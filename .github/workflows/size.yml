@@ -2,10 +2,10 @@
 name: Get data lake folder size
 on:
     workflow_dispatch:
-
 jobs:
     get-size:
         runs-on: ubuntu-latest
+
         steps:
             - name: Checkout repository
               uses: actions/checkout@v2
@@ -21,13 +21,16 @@ jobs:
                 Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
 
             - name: Get size of data lake folder
-              shell: pwsh
-              run: ./scripts/dlsize.ps1
+              uses: azure/powershell@v2
+              with:
+                inlineScript: './scripts/dls-folder-size.ps1'
+                azPSVersion: 'Latest'
+
             - name: upload generated file
               uses: actions/upload-artifact@v4
               with:
-                    name: datalake-size
-                    path: ./output/
+                name: datalake-size
+                path: ./output/
             - name: list the generated file
               shell: pwsh
               run: |
