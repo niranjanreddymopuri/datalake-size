@@ -1,0 +1,34 @@
+---
+name: Get data lake folder size
+on:
+    workflow_dispatch:
+
+jobs:
+    get-size:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Login to Azure
+              shell: pwsh
+              run: |
+                $ClientSecret = "dty8Q~Duj9vJ2Uf6.RwQG_TCKSzOaBeqQfwKZcEO"
+                $SecurePassword = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
+                $TenantId = '066fe1a7-14e1-4d6c-9f26-61b3da1d6f45'
+                $ApplicationId = 'b391290d-f79e-4d01-9045-2af456f8e56f'
+                $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApplicationId, $SecurePassword
+                Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
+
+            - name: Get size of data lake folder
+              shell: pwsh
+              run: ./scripts/dlsize.ps1
+            - name: upload generated file
+              uses: actions/upload-artifact@v4
+              with:
+                    name: datalake-size
+                    path: ./output/
+            - name: list the generated file
+              shell: pwsh
+              run: |
+                ls -lh ./output/       
