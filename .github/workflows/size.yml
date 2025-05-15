@@ -13,12 +13,8 @@ jobs:
             - name: Login to Azure
               shell: pwsh
               run: |
-
-                # $ClientSecret = "dty8Q~Duj9vJ2Uf6.RwQG_TCKSzOaBeqQfwKZcEO"
                 $ClientSecret = "{{ secrets.ClientSecret }}"
                 $SecurePassword = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
-                # $TenantId = '066fe1a7-14e1-4d6c-9f26-61b3da1d6f45'
-                # $ApplicationId = 'b391290d-f79e-4d01-9045-2af456f8e56f'
                 $TenantId = "{{ secrets.TenantId }}"
                 $ApplicationId = "{{ secrets.ApplicationId }}"
                 $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApplicationId, $SecurePassword
