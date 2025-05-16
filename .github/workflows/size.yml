@@ -21,6 +21,12 @@ jobs:
                     Install-Module -Name Az.Accounts -Repository PSGallery -Force -AllowClobber -Scope CurrentUser
                     Install-Module -Name Az.Storage -Repository PSGallery -Force -AllowClobber -Scope CurrentUser
 
+            - name: print current directoy
+              shell: pwsh
+              run: |
+                $currentDirectory = Get-Location
+                write-host "Current directory: $currentDirectory"
+              
             - name: Login to Azure
               shell: pwsh
               run: |
@@ -40,12 +46,18 @@ jobs:
                 inlineScript: './scripts/dls-folder-size.ps1'
                 azPSVersion: 'Latest'
 
-            - name: upload generated file
-              uses: actions/upload-artifact@v4
-              with:
-                name: datalake-size
-                path: ./output/
-            - name: list the generated file
-              shell: pwsh
+            - name: list the files in the current directory
+              shell: bash
               run: |
-                ls -lh ./output/       
+                echo "Listing files in the current directory:"
+                ls -ltrh
+
+            # - name: upload generated file
+            #   uses: actions/upload-artifact@v4
+            #   with:
+            #     name: datalake-size
+            #     path: ./output/
+            # - name: list the generated file
+            #   shell: pwsh
+            #   run: |
+            #     ls -lh ./output/       
