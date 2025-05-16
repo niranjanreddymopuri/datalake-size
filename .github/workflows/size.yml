@@ -41,11 +41,11 @@ jobs:
                 az login --service-principal -u $ApplicationId -p $ClientSecret --tenant $TenantId
                 Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
                 
-
             - name: Get size of data lake folder
               uses: azure/powershell@v2
               with:
                 inlineScript: |
+                    $dls_account_name = "${{ env.dls_account_name }}"
                     ./scripts/dls-folder-size.ps1 -dlsstorageAccountName $dls_account_name
                 azPSVersion: 'Latest'
 
@@ -56,4 +56,5 @@ jobs:
                 currentDirectory=$(pwd)
                 echo `current working directory is $currentDirectory`
                 ls -ltrh   
+                dls_account_name = "${{ env.dls_account_name }}"
                 az storage fs file upload --source $currentDirectory/${dls_account_name}.size.csv --path storagesizefiles/datalake-size.csv --account-name backendterraformstate1 --file-system cantaioner-rz --auth-mode login --overwrite true
