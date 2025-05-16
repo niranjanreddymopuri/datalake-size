@@ -15,13 +15,21 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v2
 
+            - name: install pwsh modules
+              shell: pwsh
+              run: |
+                    Install-Module -Name Az.Accounts -Repository PSGallery -Force -AllowClobber -Scope CurrentUser
+                    Install-Module -Name Az.Storage -Repository PSGallery -Force -AllowClobber -Scope CurrentUser
+
             - name: Login to Azure
-              uses: azure/login@v2
-              with:
-                client-id: ${{ secrets.APPLICATIONID }}
-                tenant-id: ${{ secrets.TENANTID }}
-                subscription-id: ${{ secrets.SUBSCRIPTIONID }}
-                enable-AzPSSession: true
+              shell: pwsh
+              run: |
+                $ClientSecret = "{{ secrets.ClientSecret }}"
+                $SecurePassword = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
+                $TenantId = "{{ secrets.TenantId }}"
+                $ApplicationId = "{{ secrets.ApplicationId }}"
+                $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApplicationId, $SecurePassword
+                Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
 
             - name: Get size of data lake folder
               uses: azure/powershell@v2
