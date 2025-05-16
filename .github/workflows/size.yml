@@ -50,14 +50,7 @@ jobs:
               shell: bash
               run: |
                 echo "Listing files in the current directory:"
-                ls -ltrh
-
-            # - name: upload generated file
-            #   uses: actions/upload-artifact@v4
-            #   with:
-            #     name: datalake-size
-            #     path: ./output/
-            # - name: list the generated file
-            #   shell: pwsh
-            #   run: |
-            #     ls -lh ./output/       
+                currentDirectory=$(pwd)
+                echo `current working directory is $currentDirectory`
+                ls -ltrh   
+                az storage fs file upload --source $currentDirectory/datalake-size.csv --path storagesizefiles/datalake-size.csv --account-name backendterraformstate1 --file-system cantaioner-rz --auth-mode login --overwrite true
