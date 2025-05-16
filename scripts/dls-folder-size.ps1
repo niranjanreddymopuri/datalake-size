@@ -6,11 +6,16 @@
 # Install-Module -Name Az.Storage -AllowClobber -Force
 
 # connect-Azaccount
+
+param(
+    [string]$dlsstorageAccountName
+)
+
 $currentlocation = Get-Location
 
 write-host "Current location: $currentlocation"
 
-$filename = "datalake-size.csv"
+$filename = $dlsstorageAccountName + ".size.csv"
 
 $filepath = Join-Path -Path $currentlocation -ChildPath $filename
 
@@ -20,7 +25,8 @@ Write-Host "File created: $filepath"
 
 $output = @()
 
-$storageAccountName = "backendterraformstate1"
+# $storageAccountName = "backendterraformstate1"
+$storageAccountName = $dlsstorageAccountName
 
 $ctx = New-AzStorageContext -StorageAccountName $storageAccountName -UseConnectedAccount
 
