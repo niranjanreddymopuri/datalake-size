@@ -30,6 +30,7 @@ jobs:
                 $ApplicationId = "${{ secrets.APPLICATIONID }}"
                 $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApplicationId, $SecurePassword
                 az login --service-principal -u $ApplicationId -p $ClientSecret --tenant $TenantId
+                az login --service-principal -u $ApplicationId -p $ClientSecret --tenant $TenantId
                 Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
                 
 
