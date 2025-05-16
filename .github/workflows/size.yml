@@ -24,10 +24,10 @@ jobs:
             - name: Login to Azure
               shell: pwsh
               run: |
-                $ClientSecret = "{{ secrets.ClientSecret }}"
+                $ClientSecret = "{{ secrets.CLIENTSECRET }}"
                 $SecurePassword = ConvertTo-SecureString -String $ClientSecret -AsPlainText -Force
-                $TenantId = "{{ secrets.TenantId }}"
-                $ApplicationId = "{{ secrets.ApplicationId }}"
+                $TenantId = "{{ secrets.TENANTID }}"
+                $ApplicationId = "{{ secrets.APPLICATIONID }}"
                 $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApplicationId, $SecurePassword
                 Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
 
