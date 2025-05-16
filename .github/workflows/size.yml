@@ -21,6 +21,12 @@ jobs:
                     Install-Module -Name Az.Accounts -Repository PSGallery -Force -AllowClobber -Scope CurrentUser
                     Install-Module -Name Az.Storage -Repository PSGallery -Force -AllowClobber -Scope CurrentUser
 
+            - name: print current directoy
+              shell: pwsh
+              run: |
+                $currentDirectory = Get-Location
+                write-host "Current directory: $currentDirectory"
+              
             - name: Login to Azure
               shell: pwsh
               run: |
@@ -29,6 +35,7 @@ jobs:
                 $TenantId = "${{ secrets.TENANTID }}"
                 $ApplicationId = "${{ secrets.APPLICATIONID }}"
                 $Credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $ApplicationId, $SecurePassword
+                az login --service-principal -u $ApplicationId -p $ClientSecret --tenant $TenantId
                 az login --service-principal -u $ApplicationId -p $ClientSecret --tenant $TenantId
                 Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
                 
@@ -39,12 +46,11 @@ jobs:
                 inlineScript: './scripts/dls-folder-size.ps1'
                 azPSVersion: 'Latest'
 
-            - name: upload generated file
-              uses: actions/upload-artifact@v4
-              with:
-                name: datalake-size
-                path: ./output/
-            - name: list the generated file
-              shell: pwsh
+            - name: list the files in the current directory
+              shell: bash
               run: |
-                ls -lh ./output/       
+                echo "Listing files in the current directory:"
+                currentDirectory=$(pwd)
+                echo `current working directory is $currentDirectory`
+                ls -ltrh   
+                az storage fs file upload --source $currentDirectory/datalake-size.csv --path storagesizefiles/datalake-size.csv --account-name backendterraformstate1 --file-system cantaioner-rz --auth-mode login --overwrite true
