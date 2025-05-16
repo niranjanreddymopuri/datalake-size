@@ -10,6 +10,8 @@ permissions:
 jobs:
     get-size:
         runs-on: ubuntu-latest
+        env: 
+            dls_account_name: "backendterraformstate1"
 
         steps:
             - name: Checkout repository
@@ -39,11 +41,12 @@ jobs:
                 az login --service-principal -u $ApplicationId -p $ClientSecret --tenant $TenantId
                 Connect-AzAccount -ServicePrincipal -TenantId $TenantId -Credential $Credential
                 
-
             - name: Get size of data lake folder
               uses: azure/powershell@v2
               with:
-                inlineScript: './scripts/dls-folder-size.ps1'
+                inlineScript: |
+                    $dls_account_name = "${{ env.dls_account_name }}"
+                    ./scripts/dls-folder-size.ps1 -dlsstorageAccountName $dls_account_name
                 azPSVersion: 'Latest'
 
             - name: list the files in the current directory
@@ -51,6 +54,7 @@ jobs:
               run: |
                 echo "Listing files in the current directory:"
                 currentDirectory=$(pwd)
-                echo `current working directory is $currentDirectory`
+                echo "current working directory is $currentDirectory"
                 ls -ltrh   
-                az storage fs file upload --source $currentDirectory/datalake-size.csv --path storagesizefiles/datalake-size.csv --account-name backendterraformstate1 --file-system cantaioner-rz --auth-mode login --overwrite true
+                dls_account_name = "${{ env.dls_account_name }}"
+                az storage fs file upload --source $currentDirectory/$(dls_account_name).size.csv --path storagesizefiles/datalake-size.csv --account-name backendterraformstate1 --file-system cantaioner-rz --auth-mode login --overwrite true
